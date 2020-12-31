@@ -18,12 +18,14 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with DjangoDav.  If not, see <http://www.gnu.org/licenses/>.
-from operator import and_
 from functools import reduce
+from operator import and_
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.utils.functional import cached_property
 from django.utils.timezone import now
+
 from djangodav.base.resources import BaseDavResource
 from djangodav.utils import url_join
 
@@ -32,11 +34,11 @@ class BaseDBDavResource(BaseDavResource):
     collection_model = None
     object_model = None
 
-    collection_attribute = 'parent'
-    created_attribute = 'created'
-    modified_attribute = 'modified'
-    name_attribute = 'name'
-    size_attribute = 'size'
+    collection_attribute = "parent"
+    created_attribute = "created"
+    modified_attribute = "modified"
+    name_attribute = "name"
+    size_attribute = "size"
 
     collection_select_related = tuple()
     object_select_related = tuple()
@@ -45,8 +47,8 @@ class BaseDBDavResource(BaseDavResource):
     object_prefetch_related = tuple()
 
     def __init__(self, path, **kwargs):
-        if 'obj' in kwargs:  # Accepting ready object to reduce db requests
-            self.__dict__['obj'] = kwargs.pop('obj')
+        if "obj" in kwargs:  # Accepting ready object to reduce db requests
+            self.__dict__["obj"] = kwargs.pop("obj")
         super(BaseDBDavResource, self).__init__(path)
 
     @cached_property
@@ -91,8 +93,16 @@ class BaseDBDavResource(BaseDavResource):
             return
 
         models = [
-            [self.collection_model, self.collection_select_related, self.collection_prefetch_related],
-            [self.object_model, self.object_select_related, self.object_prefetch_related]
+            [
+                self.collection_model,
+                self.collection_select_related,
+                self.collection_prefetch_related,
+            ],
+            [
+                self.object_model,
+                self.object_select_related,
+                self.object_prefetch_related,
+            ],
         ]
         for model, select_related, prefetch_related in models:
             qs = model.objects
@@ -100,11 +110,13 @@ class BaseDBDavResource(BaseDavResource):
                 qs = qs.select_related(*select_related)
             if prefetch_related:
                 qs = qs.prefetch_related(*prefetch_related)
-            kwargs = self.get_model_lookup_kwargs(**{self.collection_attribute: self.obj})
+            kwargs = self.get_model_lookup_kwargs(
+                **{self.collection_attribute: self.obj}
+            )
             for child in qs.filter(**kwargs):
                 yield self.clone(
                     url_join(*(self.path + [child.name])),
-                    obj=child    # Sending ready object to reduce db requests
+                    obj=child,  # Sending ready object to reduce db requests
                 )
 
     def read(self):
@@ -127,15 +139,17 @@ class NameLookupDBDavMixIn(object):
         super(NameLookupDBDavMixIn, self).__init__(path, **kwargs)
 
     def get_object(self):
-        return self.get_model_by_path('object', self.path)
+        return self.get_model_by_path("object", self.path)
 
     def get_collection(self):
-        return self.get_model_by_path('collection', self.path)
+        return self.get_model_by_path("collection", self.path)
 
     def create_collection(self):
         name = self.path[-1]
         parent = self.clone("/".join(self.path[:-1])).obj
-        kwargs = self.get_model_kwargs(**{self.collection_attribute: parent, 'name': name})
+        kwargs = self.get_model_kwargs(
+            **{self.collection_attribute: parent, "name": name}
+        )
         self.collection_model.objects.create(**kwargs)
 
     @cached_property
@@ -161,11 +175,23 @@ class NameLookupDBDavMixIn(object):
         args = []
         i = 0
         for part in reversed(path):
-            args.append(Q(**{"__".join(([self.collection_attribute] * i) + [self.name_attribute]): part}))
+            args.append(
+                Q(
+                    **{
+                        "__".join(
+                            ([self.collection_attribute] * i) + [self.name_attribute]
+                        ): part
+                    }
+                )
+            )
             i += 1
-        qs = getattr(self, "%s_model" % model_attr).objects.filter(**self.get_model_lookup_kwargs())
+        qs = getattr(self, "%s_model" % model_attr).objects.filter(
+            **self.get_model_lookup_kwargs()
+        )
 
-        select_related = ["__".join([self.collection_attribute] * i) for i in range(1, len(path))]
+        select_related = [
+            "__".join([self.collection_attribute] * i) for i in range(1, len(path))
+        ]
         select_related += getattr(self, "%s_select_related" % model_attr)
         if select_related:
             qs = qs.select_related(*select_related)
@@ -196,4 +222,10 @@ class NameLookupDBDavMixIn(object):
         setattr(self.obj, self.name_attribute, name)
         setattr(self.obj, self.collection_attribute, collection)
         setattr(self.obj, self.modified_attribute, now())
-        self.obj.save(update_fields=[self.name_attribute, self.collection_attribute, self.modified_attribute])
+        self.obj.save(
+            update_fields=[
+                self.name_attribute,
+                self.collection_attribute,
+                self.modified_attribute,
+            ]
+        )

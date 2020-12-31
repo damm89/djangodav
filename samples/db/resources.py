@@ -18,11 +18,12 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with DjangoDav.  If not, see <http://www.gnu.org/licenses/>.
-from base64 import b64encode, b64decode
+from base64 import b64decode, b64encode
 from hashlib import md5
 
 from django.utils.timezone import now
-from djangodav.db.resources import NameLookupDBDavMixIn, BaseDBDavResource
+
+from djangodav.db.resources import BaseDBDavResource, NameLookupDBDavMixIn
 from samples.db.models import CollectionModel, ObjectModel
 
 
@@ -40,14 +41,14 @@ class MyDBDavResource(NameLookupDBDavMixIn, BaseDBDavResource):
                 parent=self.get_parent().obj,
                 md5=hashsum,
                 size=size,
-                content=content
+                content=content,
             )
             return
         self.obj.size = size
         self.obj.modified = now()
         self.obj.content = content
         self.md5 = hashsum
-        self.obj.save(update_fields=['content', 'size', 'modified', 'md5'])
+        self.obj.save(update_fields=["content", "size", "modified", "md5"])
 
     def read(self):
         return b64decode(self.obj.content)

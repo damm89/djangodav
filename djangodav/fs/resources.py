@@ -18,13 +18,13 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with DjangoDav.  If not, see <http://www.gnu.org/licenses/>.
+import datetime
 import hashlib
 import mimetypes
-from sys import getfilesystemencoding
 import os
-import datetime
 import shutil
 import urllib
+from sys import getfilesystemencoding
 
 from django.http import HttpResponse
 from django.utils.http import http_date
@@ -32,7 +32,6 @@ from django.utils.http import http_date
 from djangodav.base.resources import BaseDavResource
 from djangodav.responses import ResponseException
 from djangodav.utils import safe_join, url_join
-
 
 fs_encoding = getfilesystemencoding()
 
@@ -118,17 +117,19 @@ class BaseFSDavResource(BaseDavResource):
 
 class DummyReadFSDavResource(BaseFSDavResource):
     def read(self):
-        with open(self.get_abs_path(), 'rb') as f:
+        with open(self.get_abs_path(), "rb") as f:
             return f.read()
 
 
 class DummyWriteFSDavResource(BaseFSDavResource):
     def write(self, request):
-        with open(self.get_abs_path(), 'wb') as dst:
+        with open(self.get_abs_path(), "wb") as dst:
             shutil.copyfileobj(request, dst)
 
 
-class DummyFSDAVResource(DummyReadFSDavResource, DummyWriteFSDavResource, BaseFSDavResource):
+class DummyFSDAVResource(
+    DummyReadFSDavResource, DummyWriteFSDavResource, BaseFSDavResource
+):
     pass
 
 
@@ -137,14 +138,14 @@ class SendFileFSDavResource(BaseFSDavResource):
 
     def read(self):
         response = HttpResponse()
-        full_path = self.get_abs_path().encode('utf-8')
+        full_path = self.get_abs_path().encode("utf-8")
         if self.quote:
             full_path = urllib.quote(full_path)
-        response['X-SendFile'] = full_path
-        response['Content-Type'] = mimetypes.guess_type(self.displayname)
-        response['Content-Length'] = self.getcontentlength
-        response['Last-Modified'] = http_date(self.getlastmodified)
-        response['ETag'] = self.getetag
+        response["X-SendFile"] = full_path
+        response["Content-Type"] = mimetypes.guess_type(self.displayname)
+        response["Content-Length"] = self.getcontentlength
+        response["Last-Modified"] = http_date(self.getlastmodified)
+        response["ETag"] = self.getetag
         raise ResponseException(response)
 
 
@@ -153,10 +154,12 @@ class RedirectFSDavResource(BaseFSDavResource):
 
     def read(self):
         response = HttpResponse()
-        response['X-Accel-Redirect'] = url_join(self.prefix, self.get_path().encode('utf-8'))
-        response['X-Accel-Charset'] = 'utf-8'
-        response['Content-Type'] = mimetypes.guess_type(self.displayname)
-        response['Content-Length'] = self.getcontentlength
-        response['Last-Modified'] = http_date(self.getlastmodified)
-        response['ETag'] = self.getetag
+        response["X-Accel-Redirect"] = url_join(
+            self.prefix, self.get_path().encode("utf-8")
+        )
+        response["X-Accel-Charset"] = "utf-8"
+        response["Content-Type"] = mimetypes.guess_type(self.displayname)
+        response["Content-Length"] = self.getcontentlength
+        response["Last-Modified"] = http_date(self.getlastmodified)
+        response["ETag"] = self.getetag
         raise ResponseException(response)

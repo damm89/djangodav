@@ -23,8 +23,8 @@ try:
     import httplib
 except ImportError:
     from http import client as httplib
-from django.http import HttpResponse
 
+from django.http import HttpResponse
 
 # When possible, code returns an HTTPResponse sub-class. In some situations, we want to be able
 # to raise an exception to control the response (error conditions within utility functions). In
@@ -37,7 +37,7 @@ class ResponseException(Exception):
     HttpResponse will be issued to the client."""
 
     def __init__(self, response, *args, **kwargs):
-        super(ResponseException, self).__init__('Response excepted', *args, **kwargs)
+        super(ResponseException, self).__init__("Response excepted", *args, **kwargs)
         self.response = response
 
 

@@ -18,11 +18,17 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with DjangoDav.  If not, see <http://www.gnu.org/licenses/>.
-from djangodav.views import DavView
+from tastypie.authentication import \
+    BasicAuthentication as TastyBasicAuthentication
+from tastypie.authentication import MultiAuthentication
+from tastypie.authentication import \
+    SessionAuthentication as TastySessionAuthentication
 
 from djangodav.auth.tasty import TastypieAuthViewMixIn
-from tastypie.authentication import MultiAuthentication, BasicAuthentication as TastyBasicAuthentication, SessionAuthentication as TastySessionAuthentication
+from djangodav.views import DavView
 
 
 class TastyAuthDavView(TastypieAuthViewMixIn, DavView):
-    authentication = MultiAuthentication(TastyBasicAuthentication(), TastySessionAuthentication())
+    authentication = MultiAuthentication(
+        TastyBasicAuthentication(), TastySessionAuthentication()
+    )
