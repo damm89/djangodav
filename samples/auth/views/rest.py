@@ -18,10 +18,13 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with DjangoDav.  If not, see <http://www.gnu.org/licenses/>.
-from djangodav.views import DavView
+from rest_framework.authentication import \
+    BasicAuthentication as RestBasicAuthentication
+from rest_framework.authentication import \
+    SessionAuthentication as RestSessionAuthentication
 
 from djangodav.auth.rest import RestAuthViewMixIn
-from rest_framework.authentication import SessionAuthentication as RestSessionAuthentication, BasicAuthentication as RestBasicAuthentication
+from djangodav.views import DavView
 
 
 class RestAuthDavView(RestAuthViewMixIn, DavView):

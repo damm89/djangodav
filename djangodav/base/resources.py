@@ -23,15 +23,26 @@ from mimetypes import guess_type
 
 from django.utils.encoding import force_bytes
 from django.utils.http import urlquote
-from djangodav.utils import rfc3339_date, rfc1123_date, safe_join
+
+from djangodav.utils import rfc1123_date, rfc3339_date, safe_join
 
 
 class BaseDavResource(object):
-    ALL_PROPS = ['getcontentlength', 'creationdate', 'getlastmodified', 'resourcetype', 'displayname']
+    ALL_PROPS = [
+        "getcontentlength",
+        "creationdate",
+        "getlastmodified",
+        "resourcetype",
+        "displayname",
+    ]
 
     LIVE_PROPERTIES = [
-        '{DAV:}getetag', '{DAV:}getcontentlength', '{DAV:}creationdate',
-        '{DAV:}getlastmodified', '{DAV:}resourcetype', '{DAV:}displayname'
+        "{DAV:}getetag",
+        "{DAV:}getcontentlength",
+        "{DAV:}creationdate",
+        "{DAV:}getlastmodified",
+        "{DAV:}resourcetype",
+        "{DAV:}displayname",
     ]
 
     def __init__(self, path):
@@ -41,7 +52,11 @@ class BaseDavResource(object):
             self.path = path.split("/")
 
     def get_path(self):
-        return ("/" if self.path else "") + "/".join(self.path) + ("/" * (self.is_collection))
+        return (
+            ("/" if self.path else "")
+            + "/".join(self.path)
+            + ("/" * (self.is_collection))
+        )
 
     def get_escaped_path(self):
         path = [urlquote(p) for p in self.path]
@@ -73,7 +88,7 @@ class BaseDavResource(object):
         # in case of infinity.
         if depth != 0:
             for child in self.get_children():
-                for desc in child.get_descendants(depth=depth-1, include_self=True):
+                for desc in child.get_descendants(depth=depth - 1, include_self=True):
                     yield desc
 
     @property
@@ -102,7 +117,7 @@ class BaseDavResource(object):
     def getetag(self):
         raise NotImplementedError()
 
-    def copy(self,  destination, depth=-1):
+    def copy(self, destination, depth=-1):
         if self.is_collection:
             if not destination.exists or not destination.is_collection:
                 destination.create_collection()
@@ -122,13 +137,15 @@ class BaseDavResource(object):
         # in case of infinity.
         if depth != 0:
             for child in self.get_children():
-                child.copy(self.clone(safe_join(destination.get_path(), child.displayname)),
-                           depth=depth-1)
+                child.copy(
+                    self.clone(safe_join(destination.get_path(), child.displayname)),
+                    depth=depth - 1,
+                )
 
     def copy_object(self, destination):
         raise NotImplemented()
 
-    def move(self,  destination):
+    def move(self, destination):
         if self.is_collection:
             if not destination.exists or not destination.is_collection:
                 destination.create_collection()

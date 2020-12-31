@@ -19,9 +19,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with DjangoDav.  If not, see <http://www.gnu.org/licenses/>.
 from datetime import datetime
+
 from django.utils.timezone import utc
+from mock import MagicMock, Mock
+
 from djangodav.base.resources import BaseDavResource
-from mock import Mock, MagicMock
 
 
 class MockResource(MagicMock, BaseDavResource):

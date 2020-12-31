@@ -18,27 +18,49 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with DjangoDav.  If not, see <http://www.gnu.org/licenses/>.
-from djangodav.acls import FullAcl
-from djangodav.locks import DummyLock
-
-from djangodav.views import DavView
-
 from django.conf.urls import url
 
-from samples.fs.resources import TempDirWebDavResource
-from samples.db.resources import MyDBDavResource
+from djangodav.acls import FullAcl
+from djangodav.locks import DummyLock
+from djangodav.views import DavView
 from samples.auth.views.rest import RestAuthDavView
 from samples.auth.views.tasty import TastyAuthDavView
-
+from samples.db.resources import MyDBDavResource
+from samples.fs.resources import TempDirWebDavResource
 
 urlpatterns = [
     # Mirroring tmp folder
-    url(r'^fs(?P<path>.*)$', DavView.as_view(resource_class=TempDirWebDavResource, lock_class=DummyLock, acl_class=FullAcl)),
+    url(
+        r"^fs(?P<path>.*)$",
+        DavView.as_view(
+            resource_class=TempDirWebDavResource,
+            lock_class=DummyLock,
+            acl_class=FullAcl,
+        ),
+    ),
     # Db file keeper
-    url(r'^db(?P<path>.*)$', DavView.as_view(resource_class=MyDBDavResource, lock_class=DummyLock, acl_class=FullAcl)),
-
+    url(
+        r"^db(?P<path>.*)$",
+        DavView.as_view(
+            resource_class=MyDBDavResource, lock_class=DummyLock, acl_class=FullAcl
+        ),
+    ),
     # REST framework auth
-    url(r'^auth/rest(?P<path>.*)$', RestAuthDavView.as_view(resource_class=TempDirWebDavResource, lock_class=DummyLock, acl_class=FullAcl)),
+    url(
+        r"^auth/rest(?P<path>.*)$",
+        RestAuthDavView.as_view(
+            resource_class=TempDirWebDavResource,
+            lock_class=DummyLock,
+            acl_class=FullAcl,
+        ),
+    ),
     # Tastypie auth
-    url(r'^auth/tasty(?P<path>.*)$', TastyAuthDavView.as_view(resource_class=TempDirWebDavResource, lock_class=DummyLock, acl_class=FullAcl)),
+    url(
+        r"^auth/tasty(?P<path>.*)$",
+        TastyAuthDavView.as_view(
+            resource_class=TempDirWebDavResource,
+            lock_class=DummyLock,
+            acl_class=FullAcl,
+        ),
+    ),
 ]

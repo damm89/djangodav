@@ -21,33 +21,32 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with DjangoDav.  If not, see <http://www.gnu.org/licenses/>.
 
-from setuptools import setup, find_packages
-
+from setuptools import find_packages, setup
 
 setup(
-    name='DjangoDav',
-    version=__import__('djangodav').__version__,
-    description=('A WebDAV server for Django.'),
-    long_description = open('README.rst').read(),
-    author='Alexander Klimenko',
-    author_email='alex@erix.ru',
-    url='https://github.com/meteozond/djangodav',
+    name="DjangoDav",
+    version=__import__("djangodav").__version__,
+    description=("A WebDAV server for Django."),
+    long_description=open("README.rst").read(),
+    author="Alexander Klimenko",
+    author_email="alex@erix.ru",
+    url="https://github.com/meteozond/djangodav",
     packages=find_packages(),
     classifiers=[
-        'Development Status :: 4 - Beta',
-        'Environment :: Web Environment',
-        'Framework :: Django',
-        'License :: OSI Approved :: GNU Affero General Public License v3',
-        'Operating System :: OS Independent',
-        'Programming Language :: Python',
+        "Development Status :: 4 - Beta",
+        "Environment :: Web Environment",
+        "Framework :: Django",
+        "License :: OSI Approved :: GNU Affero General Public License v3",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python",
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 2.6",
         "Programming Language :: Python :: 3.4",
-        'Topic :: Software Development :: Libraries :: Python Modules'
+        "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     install_requires=["lxml", "Django>=1.3.0"],
     tests_require=["Django>=1.3.0", "mock==1.0.1"],
     include_package_data=True,
     zip_safe=False,
-    test_suite='runtests.runtests'
+    test_suite="runtests.runtests",
 )

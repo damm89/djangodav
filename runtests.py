@@ -21,52 +21,52 @@
 
 import os
 import sys
+
 import django
 from django.conf import settings
 
-
 DEFAULT_SETTINGS = dict(
-    INSTALLED_APPS = (
-        'djangodav',
-        'django.contrib.auth',
-        'django.contrib.contenttypes',
+    INSTALLED_APPS=(
+        "djangodav",
+        "django.contrib.auth",
+        "django.contrib.contenttypes",
         # 'djangodav.tests',
     ),
-    DATABASES = dict(
-        default = dict(
-            ENGINE = 'django.db.backends.sqlite3'
-        )
-    ),
+    DATABASES=dict(default=dict(ENGINE="django.db.backends.sqlite3")),
     # ROOT_URLCONF = 'djangodav.tests.urls',
-    MIDDLEWARE_CLASSES = (),
-    TEMPLATES = [
+    MIDDLEWARE_CLASSES=(),
+    TEMPLATES=[
         {
-            'BACKEND': 'django.template.backends.django.DjangoTemplates',
-            'APP_DIRS': True,
+            "BACKEND": "django.template.backends.django.DjangoTemplates",
+            "APP_DIRS": True,
         },
-    ]
+    ],
 )
 
 
 def runtests(*test_args):
     if not settings.configured:
         settings.configure(**DEFAULT_SETTINGS)
-    if hasattr(django, 'setup'):
+    if hasattr(django, "setup"):
         django.setup()
     if not test_args:
-        test_args = ['djangodav']
+        test_args = ["djangodav"]
 
     parent = os.path.dirname(os.path.abspath(__file__))
     sys.path.insert(0, parent)
     try:
         from django.test.runner import DiscoverRunner
+
         runner_class = DiscoverRunner
     except ImportError:
         from django.test.simple import DjangoTestSuiteRunner
+
         runner_class = DjangoTestSuiteRunner
-    failures = runner_class(verbosity=1, interactive=True, failfast=False).run_tests(test_args)
+    failures = runner_class(verbosity=1, interactive=True, failfast=False).run_tests(
+        test_args
+    )
     sys.exit(failures)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     runtests()
